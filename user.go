@@ -596,7 +596,15 @@ func (user *User) Connect() error {
 }
 
 func (user *User) eventHandlerSync(rawEvt any) {
-	go user.eventHandler(rawEvt)
+	switch evt := rawEvt.(type) {
+	case *discordgo.RateLimit:
+		t := (time.Duration(evt.RetryAfter.Microseconds()) * time.Microsecond) + (time.Duration(rand.Intn(10000)) * time.Millisecond)
+		user.log.Debug().Type("event_type", evt).Msg(fmt.Sprintf("sleep %d", t))
+		time.Sleep(t)
+		user.log.Debug().Type("event_type", evt).Msg(fmt.Sprintf("sleep %d done", t))
+	default:
+		go user.eventHandler(rawEvt)
+	}
 }
 
 func (user *User) eventHandler(rawEvt any) {
