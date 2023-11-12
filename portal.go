@@ -1663,11 +1663,7 @@ func (portal *Portal) handleMatrixMessage(sender *User, evt *event.Event) {
 		go portal.sendMessageMetrics(evt, fmt.Errorf("%w %q", errUnknownMsgType, content.MsgType), "Ignoring")
 		return
 	}
-	if !isWebhookSend {
-		// AllowedMentions must not be set for real users, and it's also not that useful for personal bots.
-		// It's only important for relaying, where the webhook may have higher permissions than the user on Matrix.
-		sendReq.AllowedMentions = nil
-	} else if strings.Contains(sendReq.Content, "@everyone") || strings.Contains(sendReq.Content, "@here") {
+	if isWebhookSend && strings.Contains(sendReq.Content, "@everyone") || strings.Contains(sendReq.Content, "@here") {
 		powerLevels, err := portal.MainIntent().PowerLevels(portal.MXID)
 		if err != nil {
 			portal.log.Warn().Err(err).
