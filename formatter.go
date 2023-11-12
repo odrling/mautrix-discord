@@ -230,7 +230,7 @@ func (portal *Portal) parseMatrixHTML(content *event.MessageEventContent) (strin
 	allowedMentions := &discordgo.MessageAllowedMentions{
 		Parse:       []discordgo.AllowedMentionType{},
 		Users:       []string{},
-		RepliedUser: true,
+		RepliedUser: false,
 	}
 	if content.Format == event.FormatHTML && len(content.FormattedBody) > 0 {
 		ctx := format.NewContext()
